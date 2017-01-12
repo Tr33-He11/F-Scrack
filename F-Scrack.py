@@ -1,4 +1,5 @@
 #coding:utf-8
+#!/usr/bin/python
 #author:wolf@YSRC
 
 import getopt
@@ -535,4 +536,5 @@ Usage: python F-Scrack.py -h 192.168.1 [-p 21,80,3306] [-m 50] [-t 10] [-d pass.
                 t.start()
             t_join(m_count)
     except Exception,e:
-          print msg                                                      
+          print msg
+
