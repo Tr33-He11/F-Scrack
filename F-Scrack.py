@@ -1,5 +1,5 @@
 #coding:utf-8
-#!/usr/bin/python
+#!/usr/bin/env python
 #author:wolf@YSRC
 
 import getopt
@@ -26,7 +26,8 @@ USER_DIC = {
     "ftp":['www','admin','root','db','wwwroot','data','web','ftp'],
     "mysql":['root'],
     "mssql":['sa'],
-    "telnet":['administrator','admin','root','cisco'],
+    #"telnet":['administrator','admin','root','cisco'],
+    "telnet":['user'],
     "postgresql":['postgres','admin'],
     "redis":['null'],
     "mongodb":['null'],
@@ -197,7 +198,9 @@ class Crack():
         else:
             return 3
     def telnet(self,user,pass_):
+        time_out = 1
         try:
+            print '[%s] telnet start ip:%s port:%s timeout:%s' % (time.strftime('%X', time.localtime( time.time())),self.ip,self.port,self.timeout)
             tn = telnetlib.Telnet(self.ip,self.port,self.timeout)
             #tn.set_debuglevel(3)
             time.sleep(0.5)
@@ -210,9 +213,11 @@ class Crack():
         if re.search(user_match,os):
             try:
                 tn.write(str(user)+'\r\n')
-                tn.read_until(pass_match,timeout=2)
+		print '[%s] telnet write user:%s' % (time.strftime('%X', time.localtime( time.time())),user)
+                tn.read_until(pass_match,time_out)
                 tn.write(str(pass_)+'\r\n')
-                login_info=tn.read_until(login_match,timeout=3)
+		print '[%s] telnet write pass:%s' % (time.strftime('%X', time.localtime( time.time())),pass_)
+                login_info=tn.read_until(login_match,time_out)
                 tn.close()
                 if re.search(login_match,login_info):
                     return "username:%s,password:%s" % (user,pass_)
@@ -220,24 +225,26 @@ class Crack():
                 pass
         else:
             try:
-                info=tn.read_until(user_match,timeout=2)
+                info=tn.read_until(user_match,time_out)
             except Exception,e:
                 return 3
             if re.search(user_match,info):
                 try:
                     tn.write(str(user)+'\r\n')
-                    tn.read_until(pass_match,timeout=2)
+                    print '[%s] telnet write user:%s' % (time.strftime('%X', time.localtime( time.time())),user)
+                    tn.read_until(pass_match,time_out)
                     tn.write(str(pass_)+'\r\n')
-                    login_info=tn.read_until(login_match,timeout=3)
+                    print '[%s] telnet write pass:%s' % (time.strftime('%X', time.localtime( time.time())),pass_)
+                    login_info=tn.read_until(login_match,time_out)
                     tn.close()
                     if re.search(login_match,login_info):
                         return "username:%s,password:%s" % (user,pass_)
                 except Exception,e:
                     return 3
             elif re.search(pass_match,info):
-                tn.read_until(pass_match,timeout=2)
+                tn.read_until(pass_match,time_out)
                 tn.write(str(pass_)+'\r\n')
-                login_info=tn.read_until(login_match,timeout=3)
+                login_info=tn.read_until(login_match,time_out)
                 tn.close()
                 if re.search(login_match,login_info):
                     return "password:%s" % (pass_)
